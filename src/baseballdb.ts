@@ -1,35 +1,57 @@
-import * as Git from 'nodegit';
+import * as Git from 'nodegit/dist/nodegit';
 import * as fs from 'fs-extra';
+import * as MongoClient from 'mongodb/lib/mongo_client';
 
-class BuildDataBase {
 
-    constructor() {
-        this.removeRepoDirectory().then( res => {
-            this.cloneRepository();
-        });
+export class BaseballDb {
 
+    public mongoClient: MongoClient = null;
+    public repository: any = null;
+    constructor(private _mongoClient: MongoClient) {
+
+        this.mongoClient = _mongoClient;
+
+        this.cloneRepository().then( _repo => {
+            this.repository = _repo;
+        }, error => {
+            console.log(error);
+        })
     }
-
     cloneRepository(): Promise<any> {
+        console.log('Removing repo...');
         return new Promise( (resolve, reject) => {
-            console.log('Cloning baseballdatabank...');
-            Git.Clone('https://github.com/chadwickbureau/baseballdatabank.git', 'baseballdatabank').then( repo => {
-                this.generageTableNames();
-                resolve();
-            })
+            this.removeRepoDirectory().then( res => {
+                if (res) {
+                    console.log('Repo removed successfully');
+                    console.log('Cloning baseballdatabank...');
+                    Git.Clone('https://github.com/chadwickbureau/baseballdatabank.git', 'baseballdatabank').then(repo => {
+                        if (repo) {
+                            console.log('Repo has been cloned')
+                            resolve(repo);
+                        } else {
+                            console.error('Repo could not be cloned!');
+                            reject(null);
+                        }
+                    })
+
+                } else {
+                    reject(null);
+                }
+            });
         });
     }
     removeRepoDirectory(): Promise<any> {
         return new Promise( (resolve, reject) => {
             fs.remove('baseballdatabank', err => {
                 if( err) {
-
+                    reject(err);
+                } else {
+                    resolve (true);
                 }
-                resolve();
-            })
+            });
         })
     }
-    generageTableNames(): Promise<string[]> {
+    generateTableNames(): Promise<string[]> {
         const ret: string[] =[];
         return new Promise( (resolve, reject) => {
             fs.readdir('baseballdatabank/core', (err, files) => {
@@ -53,5 +75,3 @@ class BuildDataBase {
         });
     }
 }
-
-new BuildDataBase();
