@@ -15,9 +15,9 @@
   "dependencies": {
     "copy-webpack-plugin": "^4.3.1",
     "csvtojson": "^1.1.9",
+    "download-git-repo": "^1.0.2",
     "fs-extra": "^5.0.0",
     "mongodb": "^3.0.1",
-    "nodegit": "^0.20.3",
     "webpack": "^3.10.0"
   }
 }

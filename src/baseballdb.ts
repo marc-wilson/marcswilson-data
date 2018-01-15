@@ -1,7 +1,7 @@
-import * as Git from 'nodegit/dist/nodegit';
+
 import * as fs from 'fs-extra';
 import * as MongoClient from 'mongodb/lib/mongo_client';
-
+import * as download from 'download-git-repo';
 
 export class BaseballDb {
 
@@ -24,16 +24,15 @@ export class BaseballDb {
                 if (res) {
                     console.log('Repo removed successfully');
                     console.log('Cloning baseballdatabank...');
-                    Git.Clone('https://github.com/chadwickbureau/baseballdatabank.git', 'baseballdatabank').then(repo => {
-                        if (repo) {
+                    download('chadwickbureau/baseballdatabank', 'baseballdatabank', (err) => {
+                        if (!err) {
                             console.log('Repo has been cloned')
-                            resolve(repo);
+                            resolve(true);
                         } else {
+                            reject(err);
                             console.error('Repo could not be cloned!');
-                            reject(null);
                         }
                     })
-
                 } else {
                     reject(null);
                 }
