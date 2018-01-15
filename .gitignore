@@ -1,7 +1,5 @@
 
 .idea/
-*.js
-*.js.map
 .DS_Store
 baseballdatabank
 dist
